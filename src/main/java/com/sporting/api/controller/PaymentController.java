@@ -1,0 +1,182 @@
+package com.sporting.api.controller;
+
+import com.sporting.api.consts.ApiPath;
+import com.sporting.api.consts.ErrorCode;
+import com.sporting.api.consts.MessageConstant;
+import com.sporting.api.dto.PaymentDTO;
+import com.sporting.api.response.PaymentResponseDTO;
+import com.sporting.api.service.PaymentService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@Slf4j
+public class PaymentController {
+    @Autowired
+    PaymentService service;
+
+    @GetMapping(value = ApiPath.PAYMENT_GET_ALL)
+    public ResponseEntity<PaymentResponseDTO> getAll() {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            List<PaymentDTO> list = service.findAll();
+            response.setList(list);
+            //response.setMessage("Success when get all" + MessageConstant.PAYMENT_API);
+            response.setMessage(MessageConstant.GET_ALL_SUCCESS + MessageConstant.PAYMENT_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+        } catch (Exception ex) {
+            //log.error("Error when get all:" + MessageConstant.PAYMENT_API, ex);
+            log.error(MessageConstant.GET_ALL_FAIL + MessageConstant.PAYMENT_API, ex);
+           // response.setMessage("Error when get all" + MessageConstant.PAYMENT_API + ex.getMessage());
+            response.setMessage(MessageConstant.GET_ALL_FAIL + MessageConstant.PAYMENT_API + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    @PostMapping(value = ApiPath.PAYMENT_GET_UUID)
+    public ResponseEntity<PaymentResponseDTO> getUuid(@RequestBody PaymentDTO request) {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            PaymentDTO data = service.findByUUid(request.getPaymentId());
+            response.setData(data);
+            response.setMessage(MessageConstant.GET_BY_ID_OK + MessageConstant.CART_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+        } catch (Exception ex) {
+            log.error(MessageConstant.GET_BY_ID_FAIL + MessageConstant.CART_API, ex);
+            response.setMessage(MessageConstant.GET_BY_ID_FAIL + MessageConstant.CART_API + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    @PostMapping(value = ApiPath.PAYMENT_CREATE)
+    public ResponseEntity<PaymentResponseDTO> create(@RequestBody PaymentDTO request) {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            if (null == request) {
+                response.setMessage(MessageConstant.INPUT_BODY);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            boolean create = service.create(request);
+            if (!create) {
+                //response.setMessage("Create Product fail!!!!");
+                response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.CREATE_FAILURE);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            //response.setMessage("Success when create Product");
+            response.setMessage(MessageConstant.CREATE_SUCCESS + MessageConstant.PAYMENT_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            //log.error("Error when create" + MessageConstant.CART_API + ":", ex);
+            log.error(MessageConstant.PAYMENT_API + MessageConstant.CREATE_FAILURE, ex);
+            //response.setMessage("Error when create Product: " + ex.getMessage());
+            response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.CREATE_FAILURE + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = ApiPath.PAYMENT_UPDATE)
+    public ResponseEntity<PaymentResponseDTO> update(@RequestBody PaymentDTO request) {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            if (null == request) {
+                //response.setMessage("Input body");
+                response.setMessage(MessageConstant.INPUT_BODY);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            boolean update = service.update(request);
+            if (!update) {
+                //response.setMessage("Update Product fail!!!!");
+                response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.NON_EXISTED);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+           // response.setMessage("Success when Update Product");
+            response.setMessage(MessageConstant.SUCCESS_WHEN_UPDATE + MessageConstant.PAYMENT_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            //log.error("Error when Update Product:", ex);
+            log.error(MessageConstant.FAIL_WHEN_UPDATE + MessageConstant.PAYMENT_API, ex);
+            //response.setMessage("Error when Update Product: " + ex.getMessage());
+            response.setMessage(MessageConstant.FAIL_WHEN_UPDATE + MessageConstant.PAYMENT_API + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = ApiPath.PAYMENT_DELETE)
+    public ResponseEntity<PaymentResponseDTO> delete(@RequestBody PaymentDTO request) {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            if (null == request) {
+                //response.setMessage("Input body");
+                response.setMessage(MessageConstant.INPUT_BODY);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            if (!StringUtils.isNotBlank(request.getPaymentId())) {
+                //response.setMessage("Input Product Id");
+                response.setMessage(MessageConstant.INPUT_ID + MessageConstant.PAYMENT_API);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            boolean delete = service.delete(request.getPaymentId());
+            if (!delete) {
+                //response.setMessage("Delete Product fail!!!!");
+                response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.DELETE_FAIL);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+           // response.setMessage("Success when delete Product");
+            response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.SUCCESS_WHEN_DELETE);
+            response.setErrorCode(ErrorCode.SUCCESS);
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            //log.error("Error when delete Product:", ex);
+            log.error(MessageConstant.PAYMENT_API + MessageConstant.ERROR_WHEN_DELETE, ex);
+           // response.setMessage("Error when delete Product: " + ex.getMessage());
+            response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.ERROR_WHEN_DELETE + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = ApiPath.PAYMENT_PERFORM_LOCK)
+    public ResponseEntity<PaymentResponseDTO> performLock(@RequestBody PaymentDTO request) {
+        PaymentResponseDTO response = new PaymentResponseDTO();
+        try {
+            if (null == request) {
+                //response.setMessage("Input body");
+                response.setMessage(MessageConstant.INPUT_BODY);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            if (!StringUtils.isNotBlank(request.getPaymentId())) {
+               // response.setMessage("Input Product Id");
+                response.setMessage(MessageConstant.INPUT_ID + MessageConstant.PAYMENT_API);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            boolean delete = service.performLock(request.getPaymentId());
+            if (!delete) {
+                //response.setMessage("Update Product Status fail!!!!");
+                response.setMessage(MessageConstant.PAYMENT_API + MessageConstant.UPDATE_STATUS_FAILURE);
+                return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            //response.setMessage("Success when perform lock/unlock Product");
+            response.setMessage(MessageConstant.SUCCESS_PERFORM_LOCK_UNLOCK + MessageConstant.PAYMENT_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+            return new ResponseEntity(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            //log.error("Error when perform lock/unlock Product:", ex);
+            log.error(MessageConstant.FAIL_PERFORM_LOCK_UNLOCK + MessageConstant.PAYMENT_API, ex);
+            //response.setMessage("Error when perform lock/unlock Product: " + ex.getMessage());
+            response.setMessage(MessageConstant.FAIL_PERFORM_LOCK_UNLOCK + MessageConstant.PAYMENT_API + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}

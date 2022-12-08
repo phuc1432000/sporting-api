@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+#blob
+blob:
+  container: images
+  connect:
+    string: DefaultEndpointsProtocol=https;AccountName=imageblog2022;AccountKey=7ipwPVLnA64Y29AdBzz+AbnwdePpaTFDOf79nfCUUsQxNAZxcM/6/ud9EwfUgja+jU8TdURCUje1+ASt0EgZww==;EndpointSuffix=core.windows.net
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3306/sporting
+    username: root
+    password: 123123
