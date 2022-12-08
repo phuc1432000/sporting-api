@@ -62,6 +62,22 @@ public class ProductController {
         return new ResponseEntity(response, HttpStatus.OK);
     }
 
+    @PostMapping(value = ApiPath.PRODUCT_GET_CATE_ID)
+    public ResponseEntity<ProductResponseDTO> getListByCateId(@RequestBody ProductDTO request) {
+        ProductResponseDTO response = new ProductResponseDTO();
+        try {
+            List<ProductDTO> data = service.findByCategoryId(request.getCategoryId());
+            response.setList(data);
+            response.setMessage(MessageConstant.GET_BY_ID_OK + MessageConstant.PRODUCT_API);
+            response.setErrorCode(ErrorCode.SUCCESS);
+        } catch (Exception ex) {
+            log.error(MessageConstant.GET_BY_ID_FAIL + MessageConstant.PRODUCT_API, ex);
+            response.setMessage(MessageConstant.GET_BY_ID_FAIL + MessageConstant.PRODUCT_API + ex.getMessage());
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
     @PostMapping(value = ApiPath.PRODUCT_CREATE)
     public ResponseEntity<ProductResponseDTO> create(@RequestBody ProductDTO request) {
         ProductResponseDTO response = new ProductResponseDTO();

@@ -80,6 +80,15 @@ public class ProductServiceImpl implements ProductService {
                         .filter(obj -> !obj.getActive().equals(StatusConstant.STOPPED)).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProductDTO> findByCategoryId(String categoryId) {
+        List<Product> entities = repository.findByCategoryId(categoryId);
+        return entities == null || entities.size() == 0 ?
+                new ArrayList<>() :
+                entities.stream().map(obj -> mapper.convertEntityToDTO(obj))
+                        .filter(obj -> !obj.getActive().equals(StatusConstant.STOPPED)).collect(Collectors.toList());
+    }
+
     /**
      * @param uuid
      * @return

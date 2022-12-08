@@ -55,6 +55,7 @@ public interface ApiPath {
     //Product
     String PRODUCT_GET_ALL = API + "/product/get-all";
     String PRODUCT_GET_UUID = API + "/product/get-by-uuid";
+    String PRODUCT_GET_CATE_ID = API + "/product/get-by-cateId";
     String PRODUCT_CREATE = API + "/product/create";
     String PRODUCT_DELETE = API + "/product/delete";
     String PRODUCT_UPDATE = API + "/product/update";
