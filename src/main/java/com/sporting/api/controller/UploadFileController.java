@@ -26,8 +26,7 @@ public class UploadFileController {
         ImageResponseDTO response = new ImageResponseDTO();
         try {
             if (null == file) {
-                // response.setMessage("Input body");
-                response.setMessage(MessageConstant.INPUT_BODY);
+                response.setMessage("Input body");
                 return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
             //upload file
@@ -36,15 +35,12 @@ public class UploadFileController {
             ImageDTO imageDTO = new ImageDTO();
             imageDTO.setFileUploadUrl(getUrl);
             response.setData(imageDTO);
-            // response.setMessage("Success when upload file");
-            response.setMessage(MessageConstant.UPLOADFILE_API + MessageConstant.SUCCESS_WHEN_UPLOAD_FILE);
+            response.setMessage("Success when upload file");
             response.setErrorCode(ErrorCode.SUCCESS);
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception ex) {
-            //log.error("Error when upload  file:", ex);
-            log.error(MessageConstant.UPLOADFILE_API + MessageConstant.ERROR_WHEN_UPLOAD_FILE, ex);
-            //response.setMessage("Error when upload file: " + ex.getMessage());
-            response.setMessage(MessageConstant.UPLOADFILE_API + MessageConstant.ERROR_WHEN_UPLOAD_FILE + ex.getMessage());
+            log.error("Error when upload  file:", ex);
+            response.setMessage("Error when upload file: " + ex.getMessage());
             return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
